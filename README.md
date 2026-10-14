@@ -30,3 +30,14 @@ A starter productivity PWA with:
 ## Updating
 
 Edit `index.html` in GitHub and commit the changes. Reload the published site. If old content is cached, close/reopen the PWA or clear the site's website data.
+
+
+## Apple Shortcuts actions (after updating/redeploying)
+Replace `YOUR-USERNAME` with your GitHub username. Create a shortcut with the **Open URLs** action for any of these:
+
+- Open dashboard: `https://YOUR-USERNAME.github.io/islandos/`
+- Open task entry: `https://YOUR-USERNAME.github.io/islandos/?action=tasks`
+- Add a task prompt: `https://YOUR-USERNAME.github.io/islandos/?action=add-task`
+- Start focus timer: `https://YOUR-USERNAME.github.io/islandos/?action=focus`
+
+The focus action starts the timer when the page loads. iOS may open the website in Safari rather than in standalone app mode depending on how the shortcut is launched. These URLs do not create a system-wide Dynamic Island overlay.

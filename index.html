@@ -150,6 +150,19 @@
   $('greeting').innerHTML = (hour<12?'Good morning,':hour<18?'Good afternoon,':'Good evening,')+'<br>your day, your pace.';
   $('dateLine').textContent=now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+' · Make today count.';
   renderTasks();paintTimer();
+  // URL actions let Apple Shortcuts open a specific IslandOS workflow.
+  const params = new URLSearchParams(location.search);
+  const action = params.get('action');
+  if (action === 'focus') {
+    setTimeout(() => { start(); $('timerDisplay').scrollIntoView({behavior:'smooth', block:'center'}); }, 350);
+  } else if (action === 'tasks') {
+    setTimeout(() => { $('taskInput').focus(); $('taskInput').scrollIntoView({behavior:'smooth', block:'center'}); }, 350);
+  } else if (action === 'add-task') {
+    setTimeout(() => {
+      const taskText = window.prompt('What task would you like to add to IslandOS?');
+      if (taskText && taskText.trim()) { tasks.push({text:taskText.trim().slice(0,120), done:false}); save(); renderTasks(); toast('Task added ✦'); }
+    }, 350);
+  }
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
   }
