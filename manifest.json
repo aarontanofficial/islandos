@@ -1,0 +1,14 @@
+{
+  "name": "IslandOS — Personal Productivity",
+  "short_name": "IslandOS",
+  "description": "A Dynamic Island-inspired productivity dashboard.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09080f",
+  "theme_color": "#09080f",
+  "orientation": "portrait",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

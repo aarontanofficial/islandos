@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09080f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IslandOS">
+  <meta name="description" content="A personal productivity dashboard inspired by Dynamic Island.">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <title>IslandOS</title>
+  <style>
+    :root{--bg:#09080f;--panel:#15131f;--panel2:#1d1929;--text:#f8f5ff;--muted:#a9a1bb;--accent:#b89aff;--accent2:#8c6aff;--line:#30283f;--good:#8de0c0}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(ellipse at 50% -15%,#2b1d43 0,transparent 52%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    button,input,select{font:inherit} button{cursor:pointer}
+    .app{max-width:720px;margin:auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 2px 22px}
+    .eyebrow{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    h1{font-size:29px;line-height:1.12;margin:7px 0 0;letter-spacing:-.04em}.sub{color:var(--muted);font-size:13px;margin-top:8px}
+    .orb{height:44px;width:44px;border:1px solid #51406b;border-radius:16px;display:grid;place-items:center;color:var(--accent);background:#171221;font-size:22px;box-shadow:0 0 30px #9b6dff20}
+    .island-wrap{display:flex;justify-content:center;margin:20px 0 22px}
+    .island{width:min(100%,330px);background:#000;border:1px solid #3b3049;border-radius:28px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 8px 36px #0009,0 0 28px #9a70ff12;transition:.25s}
+    .island.active{border-color:#8568b2;box-shadow:0 0 0 1px #9b7bd533,0 8px 40px #0009,0 0 30px #9b70ff20}
+    .island-left{display:flex;align-items:center;gap:10px;min-width:0}.dot{height:9px;width:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);flex-shrink:0}
+    .island-title{font-size:11px;font-weight:800;letter-spacing:.08em}.island-time{font-size:12px;color:var(--muted);margin-top:3px}
+    .iconbtn{border:0;background:#211a2d;color:var(--accent);width:38px;height:38px;border-radius:50%;font-size:15px;flex-shrink:0}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin:25px 2px 12px}.section-title h2{font-size:16px;margin:0;letter-spacing:-.02em}.hint{font-size:11px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{background:linear-gradient(145deg,#1a1724,#121019);border:1px solid var(--line);border-radius:20px;padding:16px;min-width:0}
+    .metric-icon{color:var(--accent);font-size:20px}.metric{font-size:26px;font-weight:750;letter-spacing:-.05em;margin-top:12px}.metric-label{font-size:12px;color:var(--muted);margin-top:4px}
+    .panel{background:#121019d9;border:1px solid var(--line);border-radius:22px;padding:16px}
+    .task-form{display:flex;gap:8px}.task-form input{min-width:0;flex:1;background:#0d0b13;border:1px solid #393047;border-radius:13px;color:var(--text);padding:13px 12px;outline:none}.task-form input:focus{border-color:var(--accent)}
+    .primary{border:0;background:linear-gradient(135deg,#c6adff,#8c6aff);color:#171020;font-weight:800;border-radius:13px;padding:0 15px}
+    .task-list{list-style:none;padding:0;margin:12px 0 0}.task{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid #2b2536}.task:last-child{border-bottom:0}
+    .task input{accent-color:var(--accent);width:18px;height:18px}.task span{flex:1;overflow-wrap:anywhere;font-size:14px}.task.done span{color:#807990;text-decoration:line-through}.delete{border:0;background:transparent;color:#82788f;font-size:18px;padding:4px 7px}
+    .timer-controls{display:flex;gap:8px;margin-top:12px}.secondary{background:#211a2d;border:1px solid #3c304e;color:var(--text);border-radius:12px;padding:11px 13px;flex:1}
+    .bottom-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.navitem{border:1px solid var(--line);border-radius:15px;background:#14111c;color:var(--muted);padding:12px 6px;font-size:11px}.navitem span{display:block;font-size:19px;margin-bottom:5px}.navitem.selected{color:var(--accent);border-color:#5c467d;background:#211a2e}
+    .footer{text-align:center;color:#777086;font-size:11px;line-height:1.6;margin:18px 8px 0}.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#292139;border:1px solid #594575;color:#fff;padding:11px 16px;border-radius:99px;font-size:12px;transition:.25s;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+    .hidden{display:none!important}
+    @media(min-width:600px){.app{padding-top:32px}.grid{gap:14px}.card{padding:20px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div><div class="eyebrow">IslandOS · Personal Edition</div><h1 id="greeting">Your day,<br>under control.</h1><div class="sub" id="dateLine">A little progress goes a long way.</div></div>
+      <div class="orb" aria-hidden="true">✦</div>
+    </header>
+
+    <div class="island-wrap">
+      <div class="island" id="island">
+        <div class="island-left"><div class="dot"></div><div><div class="island-title" id="islandTitle">READY WHEN YOU ARE</div><div class="island-time" id="islandTime">Focus session · 25:00</div></div></div>
+        <button class="iconbtn" id="islandToggle" aria-label="Start or pause focus timer">▶</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="metric-icon">✓</div><div class="metric" id="taskMetric">0/0</div><div class="metric-label">Tasks completed today</div></div>
+      <div class="card"><div class="metric-icon">◷</div><div class="metric" id="focusMetric">25 min</div><div class="metric-label">Focus timer</div></div>
+    </div>
+
+    <div class="section-title"><h2>Today's tasks</h2><span class="hint" id="taskHint">Small steps count</span></div>
+    <section class="panel">
+      <form class="task-form" id="taskForm"><input id="taskInput" maxlength="120" placeholder="Add a task..." autocomplete="off" aria-label="New task"><button class="primary" type="submit">Add</button></form>
+      <ul class="task-list" id="taskList"></ul>
+    </section>
+
+    <div class="section-title"><h2>Focus session</h2><span class="hint">Pomodoro style</span></div>
+    <section class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div><div class="eyebrow">CURRENT SESSION</div><div style="font-size:28px;font-weight:800;letter-spacing:-.04em;margin-top:5px" id="timerDisplay">25:00</div><div class="sub" style="margin-top:3px">Stay present. One thing at a time.</div></div>
+        <div style="font-size:30px;color:var(--accent)">◉</div>
+      </div>
+      <div class="timer-controls"><button class="primary" id="timerStart" style="padding:0 18px">Start focus</button><button class="secondary" id="timerReset">Reset</button><button class="secondary" id="timerShort">5 min</button></div>
+    </section>
+
+    <div class="section-title"><h2>Your space</h2><span class="hint">Quick access</span></div>
+    <div class="bottom-nav">
+      <button class="navitem selected" data-action="tasks"><span>☑</span>Tasks</button>
+      <button class="navitem" data-action="focus"><span>◷</span>Focus</button>
+      <button class="navitem" data-action="theme"><span>✧</span>Accent</button>
+    </div>
+    <p class="footer">IslandOS is an independent personal dashboard, not an Apple system feature.<br>Tasks are saved on this device in this browser.</p>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const taskKey = 'islandos.tasks.v1';
+  let tasks = [];
+  try { tasks = JSON.parse(localStorage.getItem(taskKey) || '[]'); } catch {}
+  let totalSeconds = 25 * 60, remaining = totalSeconds, running = false, interval = null;
+  const save = () => { try { localStorage.setItem(taskKey, JSON.stringify(tasks)); } catch {} };
+  const toast = msg => { $('toast').textContent = msg; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2200); };
+  const renderTasks = () => {
+    const list = $('taskList'); list.innerHTML = '';
+    tasks.forEach((task, index) => {
+      const li = document.createElement('li'); li.className = 'task' + (task.done ? ' done' : '');
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!task.done; cb.setAttribute('aria-label','Mark task complete');
+      cb.addEventListener('change', () => { tasks[index].done = cb.checked; save(); renderTasks(); });
+      const span = document.createElement('span'); span.textContent = task.text;
+      const del = document.createElement('button'); del.className = 'delete'; del.textContent = '×'; del.setAttribute('aria-label','Delete task');
+      del.addEventListener('click', () => { tasks.splice(index,1); save(); renderTasks(); });
+      li.append(cb,span,del); list.appendChild(li);
+    });
+    const done = tasks.filter(t => t.done).length;
+    $('taskMetric').textContent = `${done}/${tasks.length}`;
+    $('taskHint').textContent = tasks.length ? `${tasks.length-done} remaining` : 'Small steps count';
+  };
+  $('taskForm').addEventListener('submit', e => {
+    e.preventDefault(); const text = $('taskInput').value.trim(); if (!text) return;
+    tasks.push({text,done:false}); save(); renderTasks(); $('taskInput').value=''; toast('Task added ✦');
+  });
+  const fmt = n => `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;
+  const paintTimer = () => {
+    $('timerDisplay').textContent = fmt(remaining); $('islandTime').textContent = `Focus session · ${fmt(remaining)}`;
+    $('focusMetric').textContent = `${Math.ceil(remaining/60)} min`;
+    $('timerStart').textContent = running ? 'Pause focus' : 'Start focus';
+    $('islandToggle').textContent = running ? 'Ⅱ' : '▶';
+    $('islandTitle').textContent = running ? 'FOCUS IN PROGRESS' : 'READY WHEN YOU ARE';
+    $('island').classList.toggle('active',running);
+  };
+  const stop = () => { running=false; if(interval) clearInterval(interval); interval=null; paintTimer(); };
+  const start = () => {
+    if(running){stop();return}
+    if(remaining<=0) remaining=totalSeconds;
+    running=true; paintTimer();
+    interval=setInterval(() => {
+      if(remaining>0){remaining--;paintTimer()}
+      else {stop();toast('Focus session complete ✨');if('Notification' in window && Notification.permission==='granted') new Notification('IslandOS',{body:'Focus session complete. Take a short break.'});}
+    },1000);
+  };
+  const reset = seconds => { stop(); totalSeconds=seconds;remaining=seconds;paintTimer(); };
+  $('timerStart').addEventListener('click',start); $('islandToggle').addEventListener('click',start);
+  $('timerReset').addEventListener('click',()=>{reset(25*60);toast('Timer reset')});
+  $('timerShort').addEventListener('click',()=>{reset(5*60);toast('5-minute timer ready')});
+  document.querySelectorAll('.navitem').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.navitem').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');
+    if(btn.dataset.action==='tasks') $('taskInput').focus();
+    if(btn.dataset.action==='focus') $('timerDisplay').scrollIntoView({behavior:'smooth',block:'center'});
+    if(btn.dataset.action==='theme'){
+      const palettes=[['#b89aff','#8c6aff'],['#8fe1d0','#42bda7'],['#ffb6d9','#d66ca3'],['#8dcaff','#4b8eff']];
+      const current=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+      const i=palettes.findIndex(p=>p[0]===current);const p=palettes[(i+1)%palettes.length];
+      document.documentElement.style.setProperty('--accent',p[0]);document.documentElement.style.setProperty('--accent2',p[1]);toast('Accent updated ✦');
+    }
+  }));
+  const now=new Date(), hour=now.getHours();
+  $('greeting').innerHTML = (hour<12?'Good morning,':hour<18?'Good afternoon,':'Good evening,')+'<br>your day, your pace.';
+  $('dateLine').textContent=now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+' · Make today count.';
+  renderTasks();paintTimer();
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+})();
+</script>
+</body>
+</html>
