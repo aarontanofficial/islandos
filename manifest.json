@@ -1,14 +1,19 @@
 {
-  "name": "IslandOS — Personal Productivity",
+  "name": "IslandOS \u2014 Personal Space",
   "short_name": "IslandOS",
-  "description": "A Dynamic Island-inspired productivity dashboard.",
+  "description": "A glass-like personal productivity dashboard",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#09080f",
-  "theme_color": "#09080f",
+  "background_color": "#f4f2f8",
+  "theme_color": "#f4f2f8",
   "orientation": "portrait",
   "icons": [
-    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }

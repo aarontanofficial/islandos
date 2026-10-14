@@ -1,172 +1,106 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09080f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="IslandOS">
-  <meta name="description" content="A personal productivity dashboard inspired by Dynamic Island.">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon.svg">
-  <title>IslandOS</title>
-  <style>
-    :root{--bg:#09080f;--panel:#15131f;--panel2:#1d1929;--text:#f8f5ff;--muted:#a9a1bb;--accent:#b89aff;--accent2:#8c6aff;--line:#30283f;--good:#8de0c0}
-    *{box-sizing:border-box} body{margin:0;background:radial-gradient(ellipse at 50% -15%,#2b1d43 0,transparent 52%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
-    button,input,select{font:inherit} button{cursor:pointer}
-    .app{max-width:720px;margin:auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 2px 22px}
-    .eyebrow{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
-    h1{font-size:29px;line-height:1.12;margin:7px 0 0;letter-spacing:-.04em}.sub{color:var(--muted);font-size:13px;margin-top:8px}
-    .orb{height:44px;width:44px;border:1px solid #51406b;border-radius:16px;display:grid;place-items:center;color:var(--accent);background:#171221;font-size:22px;box-shadow:0 0 30px #9b6dff20}
-    .island-wrap{display:flex;justify-content:center;margin:20px 0 22px}
-    .island{width:min(100%,330px);background:#000;border:1px solid #3b3049;border-radius:28px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 8px 36px #0009,0 0 28px #9a70ff12;transition:.25s}
-    .island.active{border-color:#8568b2;box-shadow:0 0 0 1px #9b7bd533,0 8px 40px #0009,0 0 30px #9b70ff20}
-    .island-left{display:flex;align-items:center;gap:10px;min-width:0}.dot{height:9px;width:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);flex-shrink:0}
-    .island-title{font-size:11px;font-weight:800;letter-spacing:.08em}.island-time{font-size:12px;color:var(--muted);margin-top:3px}
-    .iconbtn{border:0;background:#211a2d;color:var(--accent);width:38px;height:38px;border-radius:50%;font-size:15px;flex-shrink:0}
-    .section-title{display:flex;justify-content:space-between;align-items:center;margin:25px 2px 12px}.section-title h2{font-size:16px;margin:0;letter-spacing:-.02em}.hint{font-size:11px;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{background:linear-gradient(145deg,#1a1724,#121019);border:1px solid var(--line);border-radius:20px;padding:16px;min-width:0}
-    .metric-icon{color:var(--accent);font-size:20px}.metric{font-size:26px;font-weight:750;letter-spacing:-.05em;margin-top:12px}.metric-label{font-size:12px;color:var(--muted);margin-top:4px}
-    .panel{background:#121019d9;border:1px solid var(--line);border-radius:22px;padding:16px}
-    .task-form{display:flex;gap:8px}.task-form input{min-width:0;flex:1;background:#0d0b13;border:1px solid #393047;border-radius:13px;color:var(--text);padding:13px 12px;outline:none}.task-form input:focus{border-color:var(--accent)}
-    .primary{border:0;background:linear-gradient(135deg,#c6adff,#8c6aff);color:#171020;font-weight:800;border-radius:13px;padding:0 15px}
-    .task-list{list-style:none;padding:0;margin:12px 0 0}.task{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid #2b2536}.task:last-child{border-bottom:0}
-    .task input{accent-color:var(--accent);width:18px;height:18px}.task span{flex:1;overflow-wrap:anywhere;font-size:14px}.task.done span{color:#807990;text-decoration:line-through}.delete{border:0;background:transparent;color:#82788f;font-size:18px;padding:4px 7px}
-    .timer-controls{display:flex;gap:8px;margin-top:12px}.secondary{background:#211a2d;border:1px solid #3c304e;color:var(--text);border-radius:12px;padding:11px 13px;flex:1}
-    .bottom-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.navitem{border:1px solid var(--line);border-radius:15px;background:#14111c;color:var(--muted);padding:12px 6px;font-size:11px}.navitem span{display:block;font-size:19px;margin-bottom:5px}.navitem.selected{color:var(--accent);border-color:#5c467d;background:#211a2e}
-    .footer{text-align:center;color:#777086;font-size:11px;line-height:1.6;margin:18px 8px 0}.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#292139;border:1px solid #594575;color:#fff;padding:11px 16px;border-radius:99px;font-size:12px;transition:.25s;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
-    .hidden{display:none!important}
-    @media(min-width:600px){.app{padding-top:32px}.grid{gap:14px}.card{padding:20px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f2f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IslandOS">
+<meta name="description" content="Your personal glass-like productivity space.">
+<link rel="manifest" href="./manifest.json"><link rel="apple-touch-icon" href="./icon.svg">
+<title>IslandOS</title>
+<style>
+:root{--bg:#f4f2f8;--glass:rgba(255,255,255,.72);--glass2:rgba(255,255,255,.52);--ink:#201d2b;--muted:#817b91;--line:rgba(86,72,116,.13);--accent:#8b6de9;--accent-soft:#eee8ff;--green:#2c9b78;--shadow:0 14px 38px rgba(48,35,76,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 5% 0%,#e6dcff 0,transparent 38%),radial-gradient(ellipse at 100% 30%,#dceaff 0,transparent 32%),var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.app{max-width:780px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 2px 20px}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}h1{font-size:30px;line-height:1.08;letter-spacing:-.05em;margin:7px 0 0}.sub{font-size:13px;color:var(--muted);margin-top:7px}.avatar{width:44px;height:44px;border-radius:16px;background:linear-gradient(145deg,#fff,#e9e0ff);border:1px solid #fff;box-shadow:var(--shadow);display:grid;place-items:center;font-size:21px;color:var(--accent)}
+.glass{background:var(--glass);border:1px solid rgba(255,255,255,.9);box-shadow:var(--shadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px}
+.island-wrap{display:flex;justify-content:center;margin:20px 0}.island{display:flex;align-items:center;justify-content:space-between;gap:12px;width:min(100%,340px);background:#17151e;color:#fff;border:1px solid #393344;border-radius:28px;padding:11px 13px;box-shadow:0 10px 28px #20152b25;transition:.25s}.island.active{box-shadow:0 0 0 3px #b8a2ff55,0 10px 28px #20152b25}.island-left{display:flex;align-items:center;gap:10px;min-width:0}.pulse{width:9px;height:9px;background:#b6a0ff;border-radius:50%;box-shadow:0 0 12px #b6a0ff}.is-title{font-size:10px;font-weight:800;letter-spacing:.09em}.is-sub{font-size:11px;color:#bcb5ca;margin-top:3px}.circle-btn{border:0;border-radius:50%;width:36px;height:36px;background:#302740;color:#d9ccff;font-size:14px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:24px 2px 11px;gap:10px}.section-head h2{font-size:16px;letter-spacing:-.025em;margin:0}.tiny{font-size:11px;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.metric{padding:16px}.metric-top{display:flex;align-items:center;justify-content:space-between;color:var(--accent);font-size:19px}.metric-num{font-size:26px;font-weight:800;letter-spacing:-.05em;margin-top:12px}.metric-label{font-size:12px;color:var(--muted);margin-top:3px}
+.panel{padding:16px}.row{display:flex;align-items:center;gap:9px}.row.between{justify-content:space-between}.field{width:100%;min-width:0;background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--ink);outline:none}.field:focus{border-color:#a38aef;box-shadow:0 0 0 3px #bba8ff33}.primary{border:0;background:var(--accent);color:#fff;font-weight:750;border-radius:14px;padding:12px 15px;white-space:nowrap}.secondary{background:rgba(255,255,255,.6);border:1px solid var(--line);color:var(--ink);border-radius:13px;padding:11px 13px}.soft{background:var(--accent-soft);color:#6b4ac4;border:1px solid #e2d8ff}
+.list{list-style:none;margin:10px 0 0;padding:0}.item{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.item input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;flex-shrink:0}.item .item-text{flex:1;font-size:13px;overflow-wrap:anywhere}.item.done .item-text{text-decoration:line-through;color:#aaa4b5}.del{border:0;background:transparent;color:#a29aad;font-size:19px;padding:3px 6px}
+.timer{display:flex;align-items:center;justify-content:space-between;gap:12px}.timer-time{font-size:36px;letter-spacing:-.06em;font-weight:800;font-variant-numeric:tabular-nums}.timer-ring{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--accent) var(--progress,0%),#e9e4f1 0);position:relative;flex-shrink:0}.timer-ring:before{content:"";position:absolute;inset:7px;background:#faf9fd;border-radius:50%}.timer-ring span{position:relative;color:var(--accent);font-size:22px}.timer-buttons{display:flex;gap:8px;margin-top:14px}.timer-buttons button{flex:1}
+.note-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}.note{background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:16px;padding:12px}.note p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:13px}.note .note-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-top:9px}
+.schedule-form{display:grid;grid-template-columns:1fr 1fr;gap:8px}.schedule-form .wide{grid-column:1/-1}.progress-track{height:8px;background:#e8e2f1;border-radius:99px;overflow:hidden;margin-top:10px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#a88df5,#7b65dc);border-radius:99px;transition:width .25s}.goal-row{padding:12px 0;border-bottom:1px solid var(--line)}.goal-row:last-child{border-bottom:0}.goal-label{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.shortcut{border:1px solid var(--line);background:rgba(255,255,255,.64);border-radius:17px;padding:13px;text-align:left;color:var(--ink);min-height:85px}.shortcut b{display:block;font-size:13px;margin-top:9px}.shortcut small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.shortcut .sym{font-size:19px;color:var(--accent)}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:18px 0}.nav button{background:rgba(255,255,255,.5);border:1px solid var(--line);border-radius:14px;padding:10px 3px;color:var(--muted);font-size:10px}.nav button span{display:block;font-size:17px;margin-bottom:4px}.nav button.active{background:#ece5ff;color:#6c4cc5;border-color:#d9ccff}
+.footer{text-align:center;color:#938ca0;font-size:10px;line-height:1.6;margin:20px 8px 0}.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#262132;color:#fff;padding:12px 16px;border-radius:99px;font-size:12px;transition:.2s;z-index:20;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}.empty{font-size:12px;color:var(--muted);padding:12px 2px}.hidden{display:none!important}
+@media(min-width:600px){.app{padding-top:28px}.grid{gap:14px}.metric{padding:20px}.note-grid{grid-template-columns:1fr 1fr}}
+@media(prefers-color-scheme:dark){body.auto-dark{--bg:#111018;--glass:rgba(35,31,46,.82);--glass2:rgba(35,31,46,.6);--ink:#f4f0fb;--muted:#b0a8bf;--line:rgba(220,210,245,.13);--accent:#b39aff;--accent-soft:#302744;--shadow:0 14px 38px rgba(0,0,0,.18)}body.auto-dark .field,body.auto-dark .note,body.auto-dark .shortcut,body.auto-dark .secondary{background:rgba(34,29,44,.85);color:var(--ink)}body.auto-dark .timer-ring:before{background:#282333}body.auto-dark .progress-track{background:#3a3349}}
+</style>
 </head>
 <body>
-  <main class="app">
-    <header>
-      <div><div class="eyebrow">IslandOS · Personal Edition</div><h1 id="greeting">Your day,<br>under control.</h1><div class="sub" id="dateLine">A little progress goes a long way.</div></div>
-      <div class="orb" aria-hidden="true">✦</div>
-    </header>
+<main class="app">
+<header class="top"><div><div class="eyebrow">PERSONAL SPACE · ISLANDOS</div><h1 id="greeting">A little more<br>in control.</h1><div class="sub" id="dateLine">Your day, at your pace.</div></div><div class="avatar">✧</div></header>
+<div class="island-wrap"><div class="island" id="island"><div class="island-left"><div class="pulse"></div><div><div class="is-title" id="isTitle">YOUR SPACE IS READY</div><div class="is-sub" id="isSub">A calm place to focus</div></div></div><button class="circle-btn" id="pillBtn" aria-label="Start focus">▶</button></div></div>
+<div class="grid">
+<section class="glass metric"><div class="metric-top"><span>✓</span><span class="tiny">TODAY</span></div><div class="metric-num" id="taskMetric">0/0</div><div class="metric-label">Tasks completed</div></section>
+<section class="glass metric"><div class="metric-top"><span>✧</span><span class="tiny">STREAK</span></div><div class="metric-num" id="streakMetric">0 days</div><div class="metric-label">Daily progress streak</div></section>
+</div>
+<div class="nav"><button class="active" data-jump="tasks"><span>☑</span>Tasks</button><button data-jump="focus"><span>◷</span>Focus</button><button data-jump="notes"><span>✎</span>Notes</button><button data-jump="schedule"><span>▦</span>My Day</button></div>
 
-    <div class="island-wrap">
-      <div class="island" id="island">
-        <div class="island-left"><div class="dot"></div><div><div class="island-title" id="islandTitle">READY WHEN YOU ARE</div><div class="island-time" id="islandTime">Focus session · 25:00</div></div></div>
-        <button class="iconbtn" id="islandToggle" aria-label="Start or pause focus timer">▶</button>
-      </div>
-    </div>
+<div class="section-head" id="tasks"><h2>Today's checklist</h2><span class="tiny" id="taskCount">A few steps at a time</span></div>
+<section class="glass panel"><form class="row" id="taskForm"><input class="field" id="taskInput" maxlength="140" placeholder="What would you like to do?" aria-label="New task"><button class="primary">Add</button></form><ul class="list" id="taskList"></ul></section>
 
-    <div class="grid">
-      <div class="card"><div class="metric-icon">✓</div><div class="metric" id="taskMetric">0/0</div><div class="metric-label">Tasks completed today</div></div>
-      <div class="card"><div class="metric-icon">◷</div><div class="metric" id="focusMetric">25 min</div><div class="metric-label">Focus timer</div></div>
-    </div>
+<div class="section-head" id="focus"><h2>Focus & reset</h2><span class="tiny">Pomodoro timer</span></div>
+<section class="glass panel"><div class="timer"><div><div class="eyebrow" id="sessionLabel">FOCUS SESSION</div><div class="timer-time" id="timerDisplay">25:00</div><div class="sub" id="timerHint">One thing at a time.</div></div><div class="timer-ring" id="timerRing"><span>◷</span></div></div><div class="timer-buttons"><button class="primary" id="timerToggle">Start</button><button class="secondary" id="timerReset">Reset</button><button class="secondary soft" id="breakBtn">Break 5m</button></div></section>
 
-    <div class="section-title"><h2>Today's tasks</h2><span class="hint" id="taskHint">Small steps count</span></div>
-    <section class="panel">
-      <form class="task-form" id="taskForm"><input id="taskInput" maxlength="120" placeholder="Add a task..." autocomplete="off" aria-label="New task"><button class="primary" type="submit">Add</button></form>
-      <ul class="task-list" id="taskList"></ul>
-    </section>
+<div class="section-head" id="notes"><h2>Quick notes</h2><span class="tiny">Saved on this device</span></div>
+<section class="glass panel"><form id="noteForm"><textarea class="field" id="noteInput" rows="3" maxlength="1000" placeholder="Save an idea, reminder, or thought..."></textarea><div class="row between" style="margin-top:9px"><span class="tiny">Private to this browser on this device</span><button class="primary">Save note</button></div></form><div class="note-grid" id="noteList"></div></section>
 
-    <div class="section-title"><h2>Focus session</h2><span class="hint">Pomodoro style</span></div>
-    <section class="panel">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div><div class="eyebrow">CURRENT SESSION</div><div style="font-size:28px;font-weight:800;letter-spacing:-.04em;margin-top:5px" id="timerDisplay">25:00</div><div class="sub" style="margin-top:3px">Stay present. One thing at a time.</div></div>
-        <div style="font-size:30px;color:var(--accent)">◉</div>
-      </div>
-      <div class="timer-controls"><button class="primary" id="timerStart" style="padding:0 18px">Start focus</button><button class="secondary" id="timerReset">Reset</button><button class="secondary" id="timerShort">5 min</button></div>
-    </section>
+<div class="section-head" id="schedule"><h2>My day</h2><span class="tiny">Daily schedule</span></div>
+<section class="glass panel"><form id="scheduleForm" class="schedule-form"><input class="field wide" id="eventTitle" maxlength="100" placeholder="Event or plan" required><input class="field" id="eventDate" type="date" required><input class="field" id="eventTime" type="time"><button class="primary wide">Add to my day</button></form><ul class="list" id="scheduleList"></ul></section>
 
-    <div class="section-title"><h2>Your space</h2><span class="hint">Quick access</span></div>
-    <div class="bottom-nav">
-      <button class="navitem selected" data-action="tasks"><span>☑</span>Tasks</button>
-      <button class="navitem" data-action="focus"><span>◷</span>Focus</button>
-      <button class="navitem" data-action="theme"><span>✧</span>Accent</button>
-    </div>
-    <p class="footer">IslandOS is an independent personal dashboard, not an Apple system feature.<br>Tasks are saved on this device in this browser.</p>
-  </main>
-  <div class="toast" id="toast" role="status"></div>
+<div class="section-head" id="goals"><h2>Goals & progress</h2><span class="tiny">Build consistency</span></div>
+<section class="glass panel"><form class="row" id="goalForm"><input class="field" id="goalInput" maxlength="100" placeholder="A goal for today"><button class="primary">Add</button></form><div id="goalList"></div><div class="section-head" style="margin-bottom:6px"><h2 style="font-size:13px">This week</h2><span class="tiny" id="weekSummary">0 completed</span></div><div class="progress-track"><div class="progress-fill" id="weekProgress"></div></div><div class="sub" id="weekText">Complete a task to start your progress.</div></section>
+
+<div class="section-head" id="quick"><h2>Quick actions</h2><span class="tiny">For Shortcuts too</span></div>
+<section class="glass panel"><div class="shortcuts">
+<button class="shortcut" data-action="add-task"><span class="sym">＋</span><b>Add a task</b><small>Quickly capture what matters</small></button>
+<button class="shortcut" data-action="focus"><span class="sym">◷</span><b>Start focus</b><small>Begin a 25-minute session</small></button>
+<button class="shortcut" data-action="add-note"><span class="sym">✎</span><b>Quick note</b><small>Save an idea</small></button>
+<button class="shortcut" data-action="my-day"><span class="sym">▦</span><b>Open My Day</b><small>See your schedule</small></button>
+<button class="shortcut" data-action="goal"><span class="sym">◎</span><b>Add a goal</b><small>Choose a daily target</small></button>
+<button class="shortcut" data-action="dashboard"><span class="sym">⌂</span><b>Dashboard</b><small>Back to the top</small></button>
+</div></section>
+<p class="footer">IslandOS is an independent PWA, not an Apple system feature. Tasks, notes, events and goals are stored locally in this browser. Keep a separate backup for anything important.</p>
+</main><div class="toast" id="toast" role="status"></div>
 <script>
-(() => {
-  const $ = id => document.getElementById(id);
-  const taskKey = 'islandos.tasks.v1';
-  let tasks = [];
-  try { tasks = JSON.parse(localStorage.getItem(taskKey) || '[]'); } catch {}
-  let totalSeconds = 25 * 60, remaining = totalSeconds, running = false, interval = null;
-  const save = () => { try { localStorage.setItem(taskKey, JSON.stringify(tasks)); } catch {} };
-  const toast = msg => { $('toast').textContent = msg; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2200); };
-  const renderTasks = () => {
-    const list = $('taskList'); list.innerHTML = '';
-    tasks.forEach((task, index) => {
-      const li = document.createElement('li'); li.className = 'task' + (task.done ? ' done' : '');
-      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!task.done; cb.setAttribute('aria-label','Mark task complete');
-      cb.addEventListener('change', () => { tasks[index].done = cb.checked; save(); renderTasks(); });
-      const span = document.createElement('span'); span.textContent = task.text;
-      const del = document.createElement('button'); del.className = 'delete'; del.textContent = '×'; del.setAttribute('aria-label','Delete task');
-      del.addEventListener('click', () => { tasks.splice(index,1); save(); renderTasks(); });
-      li.append(cb,span,del); list.appendChild(li);
-    });
-    const done = tasks.filter(t => t.done).length;
-    $('taskMetric').textContent = `${done}/${tasks.length}`;
-    $('taskHint').textContent = tasks.length ? `${tasks.length-done} remaining` : 'Small steps count';
-  };
-  $('taskForm').addEventListener('submit', e => {
-    e.preventDefault(); const text = $('taskInput').value.trim(); if (!text) return;
-    tasks.push({text,done:false}); save(); renderTasks(); $('taskInput').value=''; toast('Task added ✦');
-  });
-  const fmt = n => `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;
-  const paintTimer = () => {
-    $('timerDisplay').textContent = fmt(remaining); $('islandTime').textContent = `Focus session · ${fmt(remaining)}`;
-    $('focusMetric').textContent = `${Math.ceil(remaining/60)} min`;
-    $('timerStart').textContent = running ? 'Pause focus' : 'Start focus';
-    $('islandToggle').textContent = running ? 'Ⅱ' : '▶';
-    $('islandTitle').textContent = running ? 'FOCUS IN PROGRESS' : 'READY WHEN YOU ARE';
-    $('island').classList.toggle('active',running);
-  };
-  const stop = () => { running=false; if(interval) clearInterval(interval); interval=null; paintTimer(); };
-  const start = () => {
-    if(running){stop();return}
-    if(remaining<=0) remaining=totalSeconds;
-    running=true; paintTimer();
-    interval=setInterval(() => {
-      if(remaining>0){remaining--;paintTimer()}
-      else {stop();toast('Focus session complete ✨');if('Notification' in window && Notification.permission==='granted') new Notification('IslandOS',{body:'Focus session complete. Take a short break.'});}
-    },1000);
-  };
-  const reset = seconds => { stop(); totalSeconds=seconds;remaining=seconds;paintTimer(); };
-  $('timerStart').addEventListener('click',start); $('islandToggle').addEventListener('click',start);
-  $('timerReset').addEventListener('click',()=>{reset(25*60);toast('Timer reset')});
-  $('timerShort').addEventListener('click',()=>{reset(5*60);toast('5-minute timer ready')});
-  document.querySelectorAll('.navitem').forEach(btn=>btn.addEventListener('click',()=>{
-    document.querySelectorAll('.navitem').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');
-    if(btn.dataset.action==='tasks') $('taskInput').focus();
-    if(btn.dataset.action==='focus') $('timerDisplay').scrollIntoView({behavior:'smooth',block:'center'});
-    if(btn.dataset.action==='theme'){
-      const palettes=[['#b89aff','#8c6aff'],['#8fe1d0','#42bda7'],['#ffb6d9','#d66ca3'],['#8dcaff','#4b8eff']];
-      const current=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-      const i=palettes.findIndex(p=>p[0]===current);const p=palettes[(i+1)%palettes.length];
-      document.documentElement.style.setProperty('--accent',p[0]);document.documentElement.style.setProperty('--accent2',p[1]);toast('Accent updated ✦');
-    }
-  }));
-  const now=new Date(), hour=now.getHours();
-  $('greeting').innerHTML = (hour<12?'Good morning,':hour<18?'Good afternoon,':'Good evening,')+'<br>your day, your pace.';
-  $('dateLine').textContent=now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+' · Make today count.';
-  renderTasks();paintTimer();
-  // URL actions let Apple Shortcuts open a specific IslandOS workflow.
-  const params = new URLSearchParams(location.search);
-  const action = params.get('action');
-  if (action === 'focus') {
-    setTimeout(() => { start(); $('timerDisplay').scrollIntoView({behavior:'smooth', block:'center'}); }, 350);
-  } else if (action === 'tasks') {
-    setTimeout(() => { $('taskInput').focus(); $('taskInput').scrollIntoView({behavior:'smooth', block:'center'}); }, 350);
-  } else if (action === 'add-task') {
-    setTimeout(() => {
-      const taskText = window.prompt('What task would you like to add to IslandOS?');
-      if (taskText && taskText.trim()) { tasks.push({text:taskText.trim().slice(0,120), done:false}); save(); renderTasks(); toast('Task added ✦'); }
-    }, 350);
-  }
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-    window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-  }
+(()=>{'use strict';
+const $=id=>document.getElementById(id), today=()=>new Date().toLocaleDateString('en-CA');
+const keys={tasks:'islandos2.tasks',notes:'islandos2.notes',events:'islandos2.events',goals:'islandos2.goals',history:'islandos2.history'};
+const load=(key,fallback=[])=>{try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))}catch{return fallback}};
+const save=(key,val)=>{try{localStorage.setItem(key,JSON.stringify(val))}catch{toast('Could not save — browser storage may be full.')}};
+let tasks=load(keys.tasks).filter(x=>x.date===today()), notes=load(keys.notes), events=load(keys.events), goals=load(keys.goals), history=load(keys.history,{});
+let duration=1500,remaining=duration,running=false,interval=null,mode='focus';
+function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function recordDay(){const done=tasks.some(t=>t.done);if(done)history[today()]=true;save(keys.history,history)}
+function renderTasks(){let ul=$('taskList');ul.innerHTML='';if(!tasks.length)ul.innerHTML='<li class="empty">Nothing on your list yet. Add one small task to begin.</li>';
+tasks.forEach((t,i)=>{let li=document.createElement('li');li.className='item'+(t.done?' done':'');let cb=document.createElement('input');cb.type='checkbox';cb.checked=!!t.done;cb.setAttribute('aria-label','Complete task');cb.onchange=()=>{t.done=cb.checked;save(keys.tasks,tasks);recordDay();renderTasks();renderStats()};let tx=document.createElement('span');tx.className='item-text';tx.textContent=t.text;let del=document.createElement('button');del.className='del';del.textContent='×';del.setAttribute('aria-label','Delete task');del.onclick=()=>{tasks.splice(i,1);save(keys.tasks,tasks);renderTasks();renderStats()};li.append(cb,tx,del);ul.append(li)});
+const done=tasks.filter(t=>t.done).length;$('taskMetric').textContent=done+'/'+tasks.length;$('taskCount').textContent=tasks.length?`${tasks.length-done} remaining`:'A few steps at a time'}
+$('taskForm').onsubmit=e=>{e.preventDefault();let text=$('taskInput').value.trim();if(!text)return;tasks.push({text,done:false,date:today(),created:new Date().toISOString()});save(keys.tasks,tasks);$('taskInput').value='';renderTasks();renderStats();toast('Task added')};
+function renderNotes(){let box=$('noteList');box.innerHTML='';if(!notes.length){box.innerHTML='<div class="empty">Your saved notes will appear here.</div>';return}notes.slice().reverse().forEach(n=>{let d=document.createElement('article');d.className='note';let p=document.createElement('p');p.textContent=n.text;let meta=document.createElement('div');meta.className='note-meta';let time=document.createElement('span');time.textContent=new Date(n.created).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});let del=document.createElement('button');del.className='del';del.textContent='Delete';del.onclick=()=>{notes=notes.filter(x=>x.id!==n.id);save(keys.notes,notes);renderNotes()};meta.append(time,del);d.append(p,meta);box.append(d)})}
+$('noteForm').onsubmit=e=>{e.preventDefault();let text=$('noteInput').value.trim();if(!text)return;notes.push({id:Date.now(),text,created:new Date().toISOString()});save(keys.notes,notes);$('noteInput').value='';renderNotes();toast('Note saved')};
+function renderEvents(){let ul=$('scheduleList');ul.innerHTML='';let upcoming=events.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));if(!upcoming.length)ul.innerHTML='<li class="empty">Add a plan or reminder to your day.</li>';upcoming.forEach((ev,i)=>{let li=document.createElement('li');li.className='item';let tx=document.createElement('span');tx.className='item-text';tx.textContent=ev.title;let tm=document.createElement('span');tm.className='tiny';tm.textContent=new Date(ev.date+'T'+(ev.time||'12:00')).toLocaleDateString([],{month:'short',day:'numeric'})+(ev.time?' · '+ev.time:'');let del=document.createElement('button');del.className='del';del.textContent='×';del.onclick=()=>{events=events.filter(x=>x.id!==ev.id);save(keys.events,events);renderEvents()};li.append(tx,tm,del);ul.append(li)})}
+$('eventDate').value=today();$('scheduleForm').onsubmit=e=>{e.preventDefault();let title=$('eventTitle').value.trim();if(!title)return;events.push({id:Date.now(),title,date:$('eventDate').value,time:$('eventTime').value});save(keys.events,events);$('eventTitle').value='';renderEvents();toast('Added to My Day')};
+function renderGoals(){let box=$('goalList');box.innerHTML='';if(!goals.length)box.innerHTML='<div class="empty">Add a goal, then check it off when you complete it.</div>';goals.forEach((g,i)=>{let d=document.createElement('div');d.className='goal-row';let row=document.createElement('div');row.className='goal-label';let label=document.createElement('label');let cb=document.createElement('input');cb.type='checkbox';cb.checked=!!g.done;cb.style.marginRight='8px';cb.onchange=()=>{g.done=cb.checked;save(keys.goals,goals);renderGoals();renderStats()};label.append(cb,document.createTextNode(g.text));let del=document.createElement('button');del.className='del';del.textContent='×';del.onclick=()=>{goals.splice(i,1);save(keys.goals,goals);renderGoals();renderStats()};row.append(label,del);d.append(row);box.append(d)})}
+$('goalForm').onsubmit=e=>{e.preventDefault();let text=$('goalInput').value.trim();if(!text)return;goals.push({text,done:false});save(keys.goals,goals);$('goalInput').value='';renderGoals();renderStats();toast('Goal added')};
+function renderStats(){let completed=tasks.some(t=>t.done);if(completed)history[today()]=true;save(keys.history,history);let streak=0,d=new Date();while(true){let k=d.toLocaleDateString('en-CA');if(history[k]){streak++;d.setDate(d.getDate()-1)}else break;if(streak>400)break}$('streakMetric').textContent=streak+' '+(streak===1?'day':'days');let done=Object.keys(history).filter(k=>{let dt=new Date(k+'T12:00:00'),now=new Date();let diff=(now-dt)/(86400000);return diff>=0&&diff<7}).length;$('weekSummary').textContent=done+' active days';$('weekProgress').style.width=Math.min(100,done/7*100)+'%';$('weekText').textContent=done?'You showed up on '+done+' of the last 7 days.':'Complete a task to start your progress.'}
+const fmt=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+function paintTimer(){ $('timerDisplay').textContent=fmt(remaining);$('sessionLabel').textContent=mode==='focus'?'FOCUS SESSION':'SHORT BREAK';$('timerHint').textContent=mode==='focus'?'One thing at a time.':'Rest your eyes and reset.';$('timerToggle').textContent=running?'Pause':'Start';$('pillBtn').textContent=running?'Ⅱ':'▶';$('isTitle').textContent=running?(mode==='focus'?'FOCUS IN PROGRESS':'BREAK IN PROGRESS'):'YOUR SPACE IS READY';$('isSub').textContent=running?fmt(remaining)+' remaining':'A calm place to focus';$('island').classList.toggle('active',running);$('timerRing').style.setProperty('--progress',((duration-remaining)/duration*100)+'%')}
+function stop(){running=false;if(interval)clearInterval(interval);interval=null;paintTimer()}
+function start(){if(running){stop();return}if(remaining<=0){remaining=duration}running=true;paintTimer();interval=setInterval(()=>{if(remaining>0){remaining--;paintTimer()}else{stop();toast(mode==='focus'?'Focus complete — take a break!':'Break complete — ready when you are.');if('vibrate'in navigator)navigator.vibrate?.([150,70,150]);}},1000)}
+function resetTimer(newMode=mode){stop();mode=newMode;duration=mode==='focus'?1500:300;remaining=duration;paintTimer()}
+$('timerToggle').onclick=start;$('pillBtn').onclick=start;$('timerReset').onclick=()=>{resetTimer(mode);toast('Timer reset')};$('breakBtn').onclick=()=>{resetTimer('break');toast('5-minute break ready')};
+function jump(id){$(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>jump(b.dataset.jump));
+function action(name){if(name==='focus'){jump('focus');if(!running)start()}else if(name==='add-task'){jump('tasks');setTimeout(()=>$('taskInput').focus(),250)}else if(name==='add-note'){jump('notes');setTimeout(()=>$('noteInput').focus(),250)}else if(name==='my-day'){jump('schedule')}else if(name==='goal'){jump('goals');setTimeout(()=>$('goalInput').focus(),250)}else if(name==='dashboard'){window.scrollTo({top:0,behavior:'smooth'})}}
+document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dataset.action));
+let now=new Date(),h=now.getHours();$('greeting').innerHTML=(h<12?'Good morning.':h<18?'Good afternoon.':'Good evening.')+'<br>Make room for you.';$('dateLine').textContent=now.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})+' · A little progress adds up.';
+renderTasks();renderNotes();renderEvents();renderGoals();renderStats();paintTimer();
+const params=new URLSearchParams(location.search);const a=params.get('action');if(a&&['focus','add-task','add-note','my-day','goal','dashboard'].includes(a)){setTimeout(()=>action(a),300)}
+if('serviceWorker'in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 })();
 </script>
-</body>
-</html>
+</body></html>

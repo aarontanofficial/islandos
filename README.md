@@ -1,43 +1,37 @@
-# IslandOS — iPhone 11 PWA
+# IslandOS 2.0 — iPhone 11 PWA
 
-A starter productivity PWA with:
-- Dynamic Island-inspired pill **inside the app**
-- Task list saved in browser local storage
-- Focus timer and 5-minute timer preset
-- Accent color cycling
-- Installable PWA manifest and basic offline cache
+## Features
+- Minimal glass-like responsive design
+- Tasks and checklist
+- Focus timer (25 minutes) and 5-minute break timer
+- Quick notes
+- Daily schedule entries
+- Goals, active-day streak and weekly active-day summary
+- URL actions for Apple Shortcuts
+- Basic service-worker offline cache
 
-## Publish using GitHub Pages from an iPhone
+## Update existing GitHub Pages site from iPhone
+1. Download and extract `IslandOS-2.0-iPhone-PWA.zip` in the iPhone Files app.
+2. Open https://github.com/aarontanofficial/islandos
+3. Replace the existing root files `index.html`, `manifest.json`, `sw.js`, and `icon.svg` with the files in this folder. Do not upload the whole folder as a subfolder.
+4. Commit changes to the branch/folder your Pages site publishes from (commonly `main` and `/(root)`). GitHub documents this under Settings → Pages: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+5. Wait for deployment, then open https://aarontanofficial.github.io/islandos/ in Safari and refresh. If old UI persists, close the installed PWA and reopen it; you may need to clear the site's website data.
+6. If the PWA looks old, service-worker cache may take a refresh/reopen to update.
 
-1. Open Safari and go to https://github.com/new
-2. Sign in, create a repository named `islandos`, and set it to **Public**.
-3. Create/upload these four files to the repository root: `index.html`, `manifest.json`, `sw.js`, `icon.svg`. You can also upload `README.md`.
-4. On the repository page, open **Settings → Pages**.
-5. Under **Build and deployment**, choose **Deploy from a branch**.
-6. Select branch `main`, folder `/(root)`, then tap **Save**.
-7. Wait for GitHub Pages to publish. The site URL will look like `https://YOUR-USERNAME.github.io/islandos/`.
-8. Open the published URL in **Safari** on the iPhone.
-9. Tap **Share → Add to Home Screen**. If shown, enable **Open as Web App**, then tap **Add**.
+## Apple Shortcuts
+Create each shortcut using Shortcuts → + → Add Action → Open URLs. Use these URLs:
+- Dashboard: https://aarontanofficial.github.io/islandos/
+- Tasks: https://aarontanofficial.github.io/islandos/?action=add-task
+- Focus: https://aarontanofficial.github.io/islandos/?action=focus
+- Quick note: https://aarontanofficial.github.io/islandos/?action=add-note
+- My Day: https://aarontanofficial.github.io/islandos/?action=my-day
+- Add goal: https://aarontanofficial.github.io/islandos/?action=goal
 
-## Important iOS limitations
+Depending on iOS, Open URLs may open Safari instead of the standalone PWA. For a shortcut icon: shortcut details → Add to Home Screen, where available.
 
-- The pill only appears inside IslandOS. A website/PWA cannot float over other apps or replace Apple's system Dynamic Island.
-- The timer works while the app is running in the foreground, but iOS may suspend browser timers in the background.
-- This starter does not include server-backed push notifications or Supabase sync.
-- Tasks are stored locally in the browser on this device. Clearing Safari website data can remove them.
-- For a future Supabase version, use Row Level Security and never place a service-role key in client-side code.
-
-## Updating
-
-Edit `index.html` in GitHub and commit the changes. Reload the published site. If old content is cached, close/reopen the PWA or clear the site's website data.
-
-
-## Apple Shortcuts actions (after updating/redeploying)
-Replace `YOUR-USERNAME` with your GitHub username. Create a shortcut with the **Open URLs** action for any of these:
-
-- Open dashboard: `https://YOUR-USERNAME.github.io/islandos/`
-- Open task entry: `https://YOUR-USERNAME.github.io/islandos/?action=tasks`
-- Add a task prompt: `https://YOUR-USERNAME.github.io/islandos/?action=add-task`
-- Start focus timer: `https://YOUR-USERNAME.github.io/islandos/?action=focus`
-
-The focus action starts the timer when the page loads. iOS may open the website in Safari rather than in standalone app mode depending on how the shortcut is launched. These URLs do not create a system-wide Dynamic Island overlay.
+## Data and limitations
+- Data is stored in localStorage in the browser/app context. Browser storage is not a backup and can be cleared by iOS.
+- This version does not sync between devices and does not provide system calendar integration, alarms that are guaranteed while the app is closed, or push notifications.
+- The timer may pause or be suspended when iOS backgrounds the PWA. Use Apple's Clock/Reminders for dependable system-level alarms.
+- iPhone 11 has a notch, not Apple's Dynamic Island. A PWA cannot display a persistent floating overlay over other apps, register native Home Screen widgets, or control other apps' music playback.
+- All site files are public. Never put private secrets or API keys in this repository.
